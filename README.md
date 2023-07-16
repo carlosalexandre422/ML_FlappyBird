@@ -7,7 +7,7 @@ A simple implementation of the NEAT algorithm where it learns to play the Flappy
 
 ```bash
   pip install pygame
-  pip install neat
+  pip install neat-python
 ```
     
 ## Acknowledgements:
