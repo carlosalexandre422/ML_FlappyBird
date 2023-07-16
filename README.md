@@ -3,7 +3,7 @@
 
 A simple implementation of the NEAT algorithm where it learns to play the Flappy Bird game.
 
-## Required installations:
+## Installation:
 
 ```bash
   pip install pygame
