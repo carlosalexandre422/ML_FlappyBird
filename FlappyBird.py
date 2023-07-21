@@ -2,8 +2,10 @@ import pygame
 import os
 import random
 import neat
+import time
 
-ai_jogando = True
+
+ai_jogando = False 
 geracao = 0
 
 TELA_LARGURA = 500
@@ -110,12 +112,12 @@ class Cano:
         self.definir_altura()
 
     def definir_altura(self):
-        self.altura = random.randrange(50,450)
+        self.altura = random.randrange(50,500)
         self.pos_topo = self.altura - self.CANO_TOPO.get_height()
         self.pos_base = self.altura + self.DISTANCIA
 
     def mover(self):
-        self.x -= self.VELOCIDADE
+        self.x -= self.VELOCIDADE 
 
     def desenhar(self, tela):
         tela.blit(self.CANO_TOPO, (self.x, self.pos_topo))
@@ -168,12 +170,16 @@ def desenhar_tela(tela, passaros, canos, chao, pontos):
     for cano in canos:
         cano.desenhar(tela)
 
-    texto = FONTE_PONTOS.render(f"Pontuação: {pontos}", 1, (255,255,255))
-    tela.blit(texto, (TELA_LARGURA - 10 - texto.get_width(), 10))
+    
     
     if ai_jogando:
         texto = FONTE_PONTOS.render(f"Geração: {geracao}", 1, (255,255,255))
         tela.blit(texto, (10, 10))
+        texto = FONTE_PONTOS.render(f"Pontuação: {pontos}", 1, (255,255,255))
+        tela.blit(texto, (TELA_LARGURA - 10 - texto.get_width(), 10))
+    else:
+        texto = FONTE_PONTOS.render(f"Pontuação: {pontos}", 1, (255,255,255))
+        tela.blit(texto, (TELA_LARGURA - 10 - texto.get_width(), 10))
 
 
     chao.desenhar(tela)
@@ -229,12 +235,13 @@ def main(genomas, config): #fitness function
         for i, passaro in enumerate(passaros):
             passaro.mover()
             #aumentar o fitness
-            lista_genomas[i].fitness += 0.1
-            output = redes[i].activate((passaro.y, 
-                                        abs(passaro.y - canos[indice_cano].altura), 
-                                        abs(passaro.y - canos[indice_cano].pos_base)))
-            if output[0] > 0.5:
-                passaro.pular()
+            if ai_jogando:
+                lista_genomas[i].fitness += 0.1
+                output = redes[i].activate((passaro.y, 
+                                            abs(passaro.y - canos[indice_cano].altura), 
+                                            abs(passaro.y - canos[indice_cano].pos_base)))
+                if output[0] > 0.5:
+                    passaro.pular()
         
         chao.mover()
 
@@ -255,11 +262,12 @@ def main(genomas, config): #fitness function
             if cano.x + cano.CANO_TOPO.get_width() < 0:
                 remover_canos.append(cano)
 
-        if adicionar_cano:
+        if adicionar_cano: 
             pontos += 1
             canos.append(Cano(600))
-            for genoma in lista_genomas:
-                genoma.fitness += 5
+            if ai_jogando:
+                for genoma in lista_genomas:
+                    genoma.fitness += 5
         for cano in remover_canos:
             canos.remove(cano)
         
